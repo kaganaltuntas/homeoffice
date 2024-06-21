@@ -8,91 +8,134 @@ from pptx.util import Inches, Pt
 from pptx.enum.text import PP_ALIGN
 import pandas as pd
 from openpyxl import Workbook
+from bs4 import BeautifulSoup
+import requests
 
+while True:
 
-add = input(":) ")
+ add = input(":) ")
 
 # Kullanıcının girdiği metni kontrol edin
-if add.startswith("yt'da "):
+ if add.startswith("yt'da "):
     # Web sürücüsünü başlat
     driver = webdriver.Chrome()  # Chrome web sürücüsü kullanıyorsanız
-
     try:
         # YouTube sitesini aç
         driver.get("https://www.youtube.com")
-
         # Videoyu arama
         search_box = driver.find_element(By.NAME, "search_query")
         search_box.send_keys(add[len("yt'da "):])  # İzlemek istediğiniz video başlığını buraya yazabilirsiniz
         search_box.submit()
-
         time.sleep(5)  # Sayfanın yüklenmesini beklemek için 5 saniye bekleyin
-
         while True:
             time.sleep(10)  # Her seferinde 10 saniye bekleyin
-
     finally:
         # Tarayıcıyı kapat
         driver.quit()
 
-elif add.startswith("gg'da "):
+ elif add.startswith("gg'da "):
     # Google için WebDriver başlatılır
     driver = webdriver.Chrome()
     try:
         # Google sitesi açılır (Google Türkiye için)
         driver.get("https://www.google.com.tr/")
-
         # Arama kutusunu bul ve girdiyle doldurur
         search_box = driver.find_element(By.NAME, "q")  # Google'ın arama kutusu için "q" kullanılır
         search_box.send_keys(add[len("gg'da "):])
         search_box.submit()
-
         time.sleep(5)  # Sayfanın yüklenmesi için beklenir
-
         while True:
             time.sleep(10)  # Her seferinde 10 saniye beklenir
-
     finally:
         # Tarayıcıyı kapat
         driver.quit()
 
-elif add == "word oluştur yaz":
+ elif add == "word oluştur yaz":
     doc = Document()
-
     docx2 = int(input("Kaç paragraf olsun: "))
     for i in range(docx2):
         docx = input("Başlık ne olsun: ")
         # Belgeye başlık ekleme
         doc.add_heading(docx, level=1)
-
         docx = input("Paragrafa ne yazayım: ")
         # Belgeye paragraf ekleme
         doc.add_paragraph(docx)
-
     docx = input("Belge ismi ne olsun: ")
     docx += ".docx"  # Dosya uzantısını ekleyin
-
     doc.save(docx)
     print(f"{docx} belgesi kaydedildi")
-
     # Oluşturduğunuz belgeyi açma
     os.system(f'start {docx}')  # Bu komut Windows için geçerlidir
-elif add == "point oluştur":
+
+ elif add == "point oluştur":
     prs = Presentation()
     prs2 = input("Belge ismi ne olsun: ")
     prs.save(f"{prs2}.pptx")  # .pptx uzantısını ekleyerek dosyayı kaydedin
     print(f"{prs2}.pptx belgesi kaydedildi")
-
     # Oluşturduğunuz belgeyi açma
     os.system(f'start {prs2}.pptx')  # .pptx uzantısını ekleyerek dosyayı açın
-elif add == "word oluştur":
+
+ elif add == "word oluştur":
     doc = Document()
     docx = input("Belge ismi ne olsun: ")
     docx += ".docx"  # Dosya uzantısını ekleyin
-
     doc.save(docx)
     print(f"{docx} belgesi kaydedildi")
 
+ elif add == "dosya sil":
+    dosya_adi = input("Silinecek dosya adı: ")
+    try:
+        if os.path.isfile(dosya_adi):
+            os.remove(dosya_adi)  # Dosyayı siler
+            print(f"{dosya_adi} adındaki dosya silindi.")
+        else:
+            print(f"{dosya_adi} adında bir dosya bulunamadı.")
+    except Exception as e:
+        print(f"Hata oluştu: {e}")
 
-else:
+ elif add == "klasör sil":
+    klasor_adi = input("Silinecek klasör adı: ")
+    try:
+        if os.path.isdir(klasor_adi):
+            os.rmdir(klasor_adi)  # Klasörü siler
+            print(f"{klasor_adi} adındaki klasör silindi.")
+        else:
+            print(f"{klasor_adi} adında bir klasör bulunamadı.")
+    except Exception as e:
+        print(f"Hata oluştu: {e}")
+
+ elif add == "dosya içeriği":
+    dosya_adi = input("Dosya adı: ")
+    try:
+        with open(dosya_adi, 'r') as dosya:
+            icerik = dosya.read()
+            print(f"{dosya_adi} dosyasının içeriği:\n{icerik}")
+    except FileNotFoundError:
+        print(f"{dosya_adi} adında bir dosya bulunamadı.")
+    except Exception as e:
+        print(f"Hata oluştu: {e}")
+
+ elif add == "not yaz":
+    not_ismi = input("Not ismi: ") + ".txt"  # Dosya uzantısını ekleyin
+    try:
+        with open(not_ismi, "a") as f2:
+            while True:
+                yazin = input("Yazın ('bitti' yazarak bitirin): ")
+                if yazin == "bitti":
+                    break
+                f2.write(yazin + "\n")  # Her satırı ayrı bir satır olarak dosyaya yazın
+        print(f"{not_ismi} adlı not dosyası oluşturuldu ve yazma işlemi tamamlandı.")
+    except Exception as e:
+        print(f"Hata oluştu: {e}")
+
+
+
+
+
+ else:
     print("Geçersiz giriş. Lütfen 'yt'da <video başlığı>', 'gg'da <arama başlığı>' veya 'word oluştur' formatında giriş yapın.")
+
+
+
+
+
